@@ -1,0 +1,115 @@
+<div class="turnos-page-container" [ngSwitch]="currentPlane">
+
+  <!-- PLANO 1: LISTA DE TURNOS COMPLETA -->
+  <div class="plane-list" *ngSwitchCase="'LISTA'">
+
+    <!-- Contenedor de la Tabla -->
+    <div class="waiting-list-container">
+      <div class="list-header">
+        <h3>Pacientes en Espera</h3>
+        <span class="badge">{{ waitingTurns.length }} Total</span>
+      </div>
+
+      <div class="table-scroll-area">
+        <table class="turns-table">
+          <thead>
+            <tr>
+              <th>Turno</th>
+              <th>Tipo</th>
+              <th>Paciente</th>
+              <th>Prioridad</th>
+              <th>Orden</th>
+              <th>Espera</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let turn of waitingTurns">
+              <td><span class="turn-id">{{ turn.numero }}</span></td>
+              <td>{{ turn.tipo }}</td>
+              <td class="text-left">{{ turn.paciente }}</td>
+              <td><span class="priority-dot" [class]="turn.prioridad">{{ turn.prioridad.replace('P', '') }}</span></td>
+              <td>{{ turn.orden }}</td>
+              <td>{{ turn.espera }}</td>
+              <td>
+                <button type="button" class="btn-action" (click)="callTurn(turn)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"
+                    style="margin-right: 6px; display: inline-block; vertical-align: middle;">
+                    <path
+                      d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.21c.27-.26.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.21z" />
+                  </svg>
+                  Llamar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal de Llamado -->
+<div class="call-modal-overlay" *ngIf="showCallModal">
+  <div class="call-modal">
+    <div class="modal-header">
+      LLAMADO TURNO
+    </div>
+    <div class="modal-body">
+      <div class="turn-id-section">
+        <div class="bell-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="#facc15">
+            <path
+              d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+          </svg>
+        </div>
+        <h1 class="turn-number">{{ selectedTurn?.numero }}</h1>
+      </div>
+
+      <div class="patient-info">
+        <h3 class="patient-name">{{ selectedTurn?.paciente }}</h3>
+        <p class="turn-type">{{ selectedTurn?.tipo }}</p>
+      </div>
+
+      <div class="timer-section">
+        <span class="timer-label">Espera:</span>
+        <div class="timer-value">
+          <i class="far fa-clock"></i>
+          <span>{{ selectedTurn?.espera }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="action-btn-group">
+        <div class="action-item">
+          <button type="button" class="btn-circle btn-atender" (click)="attendTurn()">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg>
+          </button>
+          <span>Atender</span>
+        </div>
+        <div class="action-item">
+          <button type="button" class="btn-circle btn-cancelar" (click)="closeCallModal()">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+          <span>Cancelar</span>
+        </div>
+        <div class="action-item">
+          <button type="button" class="btn-circle btn-aplazar">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-5-9h10v2H7z" />
+            </svg>
+          </button>
+          <span>Aplazar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

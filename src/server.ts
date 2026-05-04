@@ -6,23 +6,31 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import fs from 'node:fs';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+app.use(express.json());
+
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * API endpoint to save configuration
  */
+app.post('/api/config', (req, res) => {
+  const config = req.body;
+  const configPath = join(browserDistFolder, 'config.json');
+  
+  try {
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    console.log(`Configuration saved to ${configPath}`);
+    res.status(200).json({ message: 'Configuration saved successfully' });
+  } catch (error) {
+    console.error('Error saving configuration:', error);
+    res.status(500).json({ error: 'Failed to save configuration' });
+  }
+});
 
 /**
  * Serve static files from /browser

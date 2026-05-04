@@ -1,0 +1,236 @@
+.dispensar-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  padding: 0;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+
+  .patient-header {
+    background-color: #06b6d4;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0;
+    display: flex;
+    gap: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    width: 100%;
+
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      .avatar-circle {
+        width: 64px;
+        height: 64px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #06b6d4;
+      }
+    }
+
+    .info-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 2fr; // Mucho más espacio para la columna derecha
+      gap: 0.5rem; // Reducir gap para ganar espacio
+      min-width: 0;
+
+      .info-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        .info-item {
+          font-size: 0.75rem; // Más pequeño para compactar
+          label { font-weight: 700; margin-right: 0.2rem; opacity: 0.85; }
+          span { font-weight: 500; }
+        }
+
+        .info-item-row {
+          display: flex;
+          gap: 1rem;
+          .info-item { flex: 1; }
+        }
+      }
+    }
+
+    .order-number-box {
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 0.4rem;
+      border-radius: 6px;
+      position: relative;
+      text-align: center;
+      min-width: 140px; // Asegurar un ancho mínimo para que no se vea apretado
+      .order-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+      .order-value { font-size: 1rem; font-weight: 900; white-space: nowrap; }
+      .order-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #fbbf24;
+        color: #92400e;
+        font-size: 0.6rem;
+        font-weight: 900;
+        padding: 2px 6px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+    }
+
+    .service-box {
+      margin-top: 0.5rem;
+      text-align: center;
+      .service-label { font-size: 0.65rem; font-weight: 800; opacity: 0.8; text-transform: uppercase; }
+      .service-value { font-size: 0.8rem; font-weight: 700; }
+    }
+  }
+
+  .toma-section {
+    background: white;
+    border-radius: 0;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.1);
+
+    .section-title {
+      background-color: #06b6d4;
+      color: white;
+      padding: 0.5rem;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .tests-list {
+      padding: 0.5rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .test-card {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        gap: 2rem;
+        transition: all 0.2s;
+        
+        &:hover {
+          background-color: #f8fafc;
+        }
+
+        .test-check input[type="checkbox"] {
+          width: 28px;
+          height: 28px;
+          cursor: pointer;
+          accent-color: #06b6d4;
+        }
+
+        .test-icon .tube-img {
+          width: 50px;
+          height: auto;
+        }
+
+        .test-details {
+          flex: 1;
+          .test-name { font-size: 1.1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
+          .test-sub { font-size: 0.95rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+          .test-id { font-size: 0.85rem; color: #94a3b8; font-family: monospace; }
+        }
+
+        .test-quantity {
+          display: flex;
+          align-items: center;
+          gap: 0;
+          background: #f1f5f9;
+          padding: 2px;
+          border-radius: 4px;
+
+          .qty-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background-color: #06b6d4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &.minus { border-radius: 4px 0 0 4px; }
+            &.plus { border-radius: 0 4px 4px 0; }
+            &:hover { background-color: #0891b2; }
+          }
+          .qty-input {
+            width: 40px;
+            height: 36px;
+            border: none;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1rem;
+            background: white;
+          }
+        }
+      }
+    }
+
+    .print-actions {
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      background-color: white;
+
+      .btn-print {
+        background-color: #06b6d4;
+        color: white;
+        border: none;
+        width: 500px;
+        height: 48px;
+        border-radius: 24px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 10px rgba(6, 182, 212, 0.4);
+        &:hover { background-color: #0891b2; transform: translateY(-2px); }
+        span { font-size: 1.1rem; text-transform: capitalize; }
+      }
+    }
+  }
+
+  .btn-floating-back {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    background-color: #1e293b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    z-index: 1000;
+    &:hover { background-color: #0f172a; transform: scale(1.1); }
+  }
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

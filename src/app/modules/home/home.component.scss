@@ -1,0 +1,492 @@
+// --- Footer Inferior ---
+.home-footer {
+  height: 18px;
+  background-color: #06b6d4;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  font-size: 0.7rem;
+  color: #ffffff;
+  z-index: 10;
+
+  .footer-section {
+    flex: 1; // Todas ocupan lo mismo para centrar el medio
+    display: flex;
+    align-items: center;
+
+    &.left {
+      justify-content: flex-start;
+    }
+
+    &.center {
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 500;
+
+      .footer-version {
+        opacity: 0.7;
+      }
+    }
+
+    &.right {
+      justify-content: flex-end;
+      gap: 0.6rem;
+
+      .timer-badge {
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 0 0.8rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: 'Courier New', Courier, monospace;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.75rem;
+
+        .timer-icon {
+          animation: pulse-blink 1s infinite;
+          color: #22d3ee;
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulse-blink {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+// --- Modal de Selección ---
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); // Más oscuro para resaltar el modal
+  backdrop-filter: blur(10px); // Blur más intenso
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlayFade 0.3s ease-out;
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.selection-modal {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2.5rem;
+  animation: modalAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative; // Para posicionar la X
+
+    .modal-close-btn {
+      position: absolute;
+      top: -1.5rem;
+      right: -1.5rem;
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #e2e8f0;
+        color: #ef4444;
+        transform: rotate(90deg);
+      }
+    }
+
+    h2 {
+      color: #1e293b;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+  }
+
+  .modal-body {
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+      }
+
+      select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #1e293b;
+        background-color: #f8fafc;
+        outline: none;
+        transition: all 0.2s;
+
+        &:focus {
+          border-color: #06b6d4;
+          background-color: white;
+          box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    margin-top: 2rem;
+
+    .btn-confirm {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 20px -5px rgba(6, 182, 212, 0.4);
+      }
+
+      &:disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// --- CSS Variables para Colores (Coherentes con el diseño premium) ---
+$primary-cyan: #06b6d4;
+$primary-cyan-dark: #0891b2;
+$text-dark: #1e293b;
+$text-light: #64748b;
+$bg-main: #f1f5f9; // Gris muy suave para el fondo principal
+$border-color: #e2e8f0;
+
+:host {
+  display: block;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden; // Prevenir scroll a nivel global, se maneja por área
+}
+
+.home-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+// --- Header Superior ---
+.home-header {
+  height: 45px; // Thinner header
+  background-color: $primary-cyan;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10; // Para que la sombra caiga sobre el contenido
+
+  .header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      .logo {
+        height: 35px; // Aumentado para que se vea más grande
+        width: auto;
+        object-fit: contain;
+      }
+
+      .logo-text {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    }
+  }
+
+  .header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .session-display {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.2rem 1.2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer; // Indicador de click
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.02);
+      }
+
+      .session-text {
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .header-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
+
+    .session-timer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.15);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      svg {
+        opacity: 0.8;
+      }
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+
+      .username {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .avatar {
+        background-color: white;
+        color: $primary-cyan;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+}
+
+// --- Cuerpo Principal (Sidebar + Main Content) ---
+.home-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden; // Contiene los scrolls internos
+}
+
+// --- Sidebar Izquierdo ---
+.sidebar {
+  width: 200px; // Ancho normal
+  background-color: white;
+  border-right: 2px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &.collapsed {
+    width: 70px; // Ancho colapsado
+
+    .nav-item {
+      justify-content: center;
+      padding: 0.8rem 0;
+
+      span {
+        display: none; // Ocultar texto
+      }
+
+      svg {
+        margin: 0;
+      }
+    }
+
+    .logout-item {
+      padding: 0;
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      li {
+        padding: 0 1rem;
+      }
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 1rem;
+      color: $text-light;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      svg {
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        background-color: #f8fafc;
+        color: $text-dark;
+      }
+
+      &.active {
+        background-color: $primary-cyan;
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(6, 182, 212, 0.3);
+      }
+
+      &.text-danger {
+        color: #ef4444;
+        margin-top: 2rem;
+
+        &:hover {
+          background-color: #fef2f2;
+        }
+      }
+    }
+  }
+}
+
+// --- Área Principal (Planos) ---
+.main-content {
+  flex: 1;
+  background-color: $bg-main;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .content-wrapper {
+    background-color: white;
+    border-radius: 0;
+    padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: none;
+    border: none;
+    overflow-y: auto;
+  }
+}
