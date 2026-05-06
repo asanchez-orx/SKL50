@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
+import { TurnosService } from '../../../../services/turnos.service';
 
 @Component({
   selector: 'app-turnos',
@@ -9,20 +10,13 @@ import { Router } from '@angular/router';
   templateUrl: './turnos.component.html',
   styleUrl: './turnos.component.scss'
 })
-export class TurnosComponent {
+export class TurnosComponent implements OnInit {
   showCallModal = false;
   selectedTurn: any = null;
   currentPlane: 'LISTA' | 'ATENCION' = 'LISTA';
+  isPaused: boolean = true;
 
-  // Lista de 20 turnos (1 al 20)
-  waitingTurns = Array.from({ length: 20 }, (_, i) => ({
-    numero: `T-${i + 1}`,
-    tipo: i % 3 === 0 ? 'ADULTO MAYOR' : 'GENERAL',
-    paciente: `PACIENTE PRUEBA ${i + 1}`,
-    prioridad: 'P' + ((i % 3) + 1),
-    orden: `20260503${1000 + i}`,
-    espera: `${(i + 1) * 2} MIN`
-  }));
+  waitingTurns: any[] = [];
 
   // Datos para la pantalla de atención (MOCK)
   patientData = {
@@ -49,7 +43,57 @@ export class TurnosComponent {
     { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private turnosService: TurnosService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadWaitingTurns();
+    }
+  }
+
+  loadWaitingTurns() {
+    const idSede = localStorage.getItem('currentSedeId');
+    const idModulo = localStorage.getItem('idmodulo');
+    const idServicio = localStorage.getItem('idservicio');
+
+    if (!idSede || !idModulo || !idServicio) {
+      console.warn('Configuración incompleta para cargar turnos (Sede, Módulo o Servicio faltante)');
+      return;
+    }
+
+    this.turnosService.getTurnosDisponibles(idSede, idModulo, idServicio).subscribe({
+      next: (data: any) => {
+        if (data && Array.isArray(data)) {
+          this.waitingTurns = data.map((t: any) => ({
+            numero: t.numeroTurno,
+            tipo: t.nomTipoTurno,
+            paciente: `${t.paciente?.nombre1 || ''} ${t.paciente?.apellido1 || ''}`.trim() || 'Desconocido',
+            prioridad: 'P' + (t.nPrioridad || 3),
+            orden: t.numeroOrden,
+            espera: `${t.MinutosEspera} MIN`
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error('Error cargando turnos disponibles:', err);
+      }
+    });
+  }
+
+  onStartAttention() {
+    this.isPaused = false;
+    this.turnosService.triggerStartTimer();
+    this.loadWaitingTurns();
+  }
+
+  pauseAttention() {
+    this.isPaused = true;
+    this.turnosService.triggerStopTimer();
+  }
 
   callTurn(turn: any) {
     this.selectedTurn = turn;

@@ -15,24 +15,28 @@
 
     <div class="modal-body">
       <div class="form-group">
-        <label>Módulo</label>
-        <select [(ngModel)]="selectionData.modulo" name="modulo">
-          <option value="" disabled selected>Selecciona un módulo</option>
-          <option *ngFor="let m of modulos" [value]="m">{{ m }}</option>
+        <label>Servicio</label>
+        <select [(ngModel)]="selectionData.idServicio" name="servicio" (change)="onServicioChange()">
+          <option value="" disabled selected>Selecciona un servicio</option>
+          <option *ngFor="let s of servicios" [value]="s.idServicio">
+            {{ s.nomServicio }}
+          </option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Servicio</label>
-        <select [(ngModel)]="selectionData.servicio" name="servicio">
-          <option value="" disabled selected>Selecciona un servicio</option>
-          <option *ngFor="let s of servicios" [value]="s">{{ s }}</option>
+        <label>Taquilla</label>
+        <select [(ngModel)]="selectionData.idModulo" name="modulo">
+          <option value="" disabled selected>Selecciona una taquilla</option>
+          <option *ngFor="let t of taquillas" [value]="t.idTaquilla">
+            {{ t.nomTaquilla || t }}
+          </option>
         </select>
       </div>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn-confirm" [disabled]="!selectionData.modulo || !selectionData.servicio"
+      <button type="button" class="btn-confirm" [disabled]="!selectionData.idModulo || !selectionData.idServicio"
         (click)="confirmSelection()">
         Confirmar e Ingresar
       </button>
@@ -57,7 +61,7 @@
 
     <!-- Información de Sesión (Centro) -->
     <div class="header-center" *ngIf="!showSelectionModal">
-      <div class="session-display" (click)="openSelectionModal()" title="Click para cambiar módulo/servicio">
+      <div class="session-display" (click)="openSelectionModal()" title="Click para cambiar configuración">
         <span class="session-text">{{ selectionData.modulo }} / {{ selectionData.servicio }}</span>
       </div>
     </div>

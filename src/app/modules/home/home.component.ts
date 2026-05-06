@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectorRef, N
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TurnosService } from '../../services/turnos.service';
 
 @Component({
   selector: 'app-home',
@@ -19,17 +20,23 @@ export class HomeComponent implements OnInit, OnDestroy {
   private secondsElapsed: number = 0;
   private timerInterval: any;
 
+  taquillas: any[] = [];
+  servicios: any[] = [];
+
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
   selectionData = {
+    idModulo: '',
     modulo: '',
+    idServicio: '',
     servicio: ''
   };
 
   openSelectionModal() {
     this.showSelectionModal = true;
+    this.fetchServicios();
   }
 
   closeSelectionModal() {
@@ -42,11 +49,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private turnosService: TurnosService
   ) { }
 
-  modulos: string[] = ['Recepción', 'Laboratorio', 'Farmacia', 'Caja', 'Administración'];
-  servicios: string[] = ['Admisión General', 'Toma de Muestras', 'Entrega de Resultados', 'Consulta Prioritaria', 'Facturación'];
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -55,16 +61,72 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Verificar si ya existe una sesión guardada
       const savedModulo = localStorage.getItem('modulo');
       const savedServicio = localStorage.getItem('servicio');
+      const savedIdModulo = localStorage.getItem('idmodulo');
+      const savedIdServicio = localStorage.getItem('idservicio');
 
       if (savedModulo && savedServicio) {
         this.selectionData.modulo = savedModulo;
         this.selectionData.servicio = savedServicio;
+        this.selectionData.idServicio = savedIdServicio || '';
         this.showSelectionModal = false;
-        this.startTimer(); // Iniciar si ya está logueado
+        // Timer no longer starts automatically here
       } else {
         this.showSelectionModal = true;
+        this.fetchServicios();
       }
+
+      // Escuchar el trigger para iniciar el cronómetro
+      this.turnosService.startTimer$.subscribe(() => {
+        this.startTimer();
+      });
+
+      // Escuchar el trigger para pausar el cronómetro
+      this.turnosService.stopTimer$.subscribe(() => {
+        this.stopTimer();
+      });
     }
+  }
+
+  fetchServicios() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    const idSede = localStorage.getItem('currentSedeId');
+    if (!idSede) {
+      console.warn('No se encontró currentSedeId para cargar servicios');
+      return;
+    }
+
+    this.turnosService.getServicios(idSede).subscribe({
+      next: (data: any) => {
+        this.servicios = data;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching servicios:', err);
+      }
+    });
+  }
+
+  onServicioChange() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    const idSede = localStorage.getItem('currentSedeId');
+    if (!idSede) return;
+
+    // Al cambiar de servicio, reseteamos la taquilla seleccionada
+    this.selectionData.idModulo = '';
+    this.selectionData.modulo = '';
+    this.taquillas = [];
+
+    this.turnosService.getTaquillas(idSede).subscribe({
+      next: (data: any) => {
+        this.taquillas = data;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching taquillas:', err);
+      }
+    });
   }
 
   private startTimer() {
@@ -86,6 +148,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
+  private stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
   private pad(num: number): string {
     return num < 10 ? '0' + num : num.toString();
   }
@@ -97,12 +166,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   confirmSelection() {
-    if (this.selectionData.modulo && this.selectionData.servicio) {
+    if (this.selectionData.idModulo && this.selectionData.idServicio) {
       this.showSelectionModal = false;
       if (isPlatformBrowser(this.platformId)) {
+        // Encontrar nombres para mostrar
+        const selectedS = this.servicios.find(s => s.idServicio == this.selectionData.idServicio);
+        const selectedT = this.taquillas.find(t => t.idTaquilla == this.selectionData.idModulo);
+        
+        this.selectionData.servicio = selectedS?.nomServicio || '';
+        this.selectionData.modulo = selectedT?.nomTaquilla || '';
+
+        localStorage.setItem('idmodulo', this.selectionData.idModulo);
         localStorage.setItem('modulo', this.selectionData.modulo);
+        localStorage.setItem('idservicio', this.selectionData.idServicio);
         localStorage.setItem('servicio', this.selectionData.servicio);
-        this.startTimer(); // Iniciar cronómetro al confirmar
+        
+        // Timer no longer starts here, it starts from TurnosComponent
       }
     }
   }

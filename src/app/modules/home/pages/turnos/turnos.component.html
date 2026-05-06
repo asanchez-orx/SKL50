@@ -6,11 +6,29 @@
     <!-- Contenedor de la Tabla -->
     <div class="waiting-list-container">
       <div class="list-header">
-        <h3>Pacientes en Espera</h3>
-        <span class="badge">{{ waitingTurns.length }} Total</span>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <h3>Pacientes en Espera</h3>
+          <span class="badge">{{ waitingTurns.length }} Total</span>
+        </div>
+
+        <div class="actions-group">
+          <button type="button" class="btn-start-atencion" (click)="onStartAttention()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Iniciar Atención
+          </button>
+
+          <button type="button" class="btn-pause-atencion" (click)="pauseAttention()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+            Pausar Atención
+          </button>
+        </div>
       </div>
 
-      <div class="table-scroll-area">
+      <div class="table-scroll-area" *ngIf="!isPaused">
         <table class="turns-table">
           <thead>
             <tr>
@@ -44,6 +62,15 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- PAUSE STATE -->
+      <div class="paused-state" *ngIf="isPaused">
+        <div class="paused-content">
+          <img src="assets/images/attention_paused_illustration.png" alt="Atención en Pausa" class="paused-img">
+          <h2>Atención en Pausa</h2>
+          <p>La recepción de turnos está detenida. Haz clic en "Iniciar Atención" para continuar.</p>
+        </div>
       </div>
     </div>
   </div>

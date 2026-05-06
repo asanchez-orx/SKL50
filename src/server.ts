@@ -5,7 +5,7 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import fs from 'node:fs';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -23,8 +23,22 @@ app.post('/api/config', (req, res) => {
   const configPath = join(browserDistFolder, 'config.json');
   
   try {
+    // Ensure the target directory exists (fixes ENOENT in dev mode)
+    const targetDir = dirname(configPath);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     console.log(`Configuration saved to ${configPath}`);
+
+    // Persist to public/config.json if it exists (development source)
+    const publicConfigPath = join(process.cwd(), 'public', 'config.json');
+    if (fs.existsSync(dirname(publicConfigPath))) {
+      fs.writeFileSync(publicConfigPath, JSON.stringify(config, null, 2));
+      console.log(`Source configuration persisted to ${publicConfigPath}`);
+    }
+
     res.status(200).json({ message: 'Configuration saved successfully' });
   } catch (error) {
     console.error('Error saving configuration:', error);
