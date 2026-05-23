@@ -8,7 +8,7 @@ interface Slide {
 }
 
 import { Router } from '@angular/router';
-import { ConfigService } from '../../services/config.service';
+import { ConfigService, AppConfig } from '../../services/config.service';
 import { LoginService } from '../../services/login.service';
 import { CredencialesService } from '../../services/credenciales.service';
 import Swal from 'sweetalert2';
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   };
 
   showConfigModal = false;
-  tempIp = '';
+  tempConfig: AppConfig = { wsIp: '' };
   isLoggingIn = false;
 
   constructor(
@@ -237,7 +237,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   openConfigModal(): void {
     console.log('Opening configuration...');
-    this.tempIp = this.configService.getIp();
+    this.tempConfig = { ...this.configService.getConfig() };
     this.showConfigModal = true;
     this.cdr.detectChanges();
   }
@@ -247,29 +247,25 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   async saveConfig(): Promise<void> {
-    const success = await this.configService.saveConfig(this.tempIp);
-    if (success) {
-      this.closeConfigModal();
-      this.cdr.detectChanges();
+    // 1. Cerramos el modal primero de forma visual
+    this.closeConfigModal();
+    this.cdr.detectChanges();
 
-      Swal.fire({
-        icon: 'success',
-        title: '¡Guardado con éxito!',
-        text: 'La configuración de Web Services ha sido actualizada.',
-        confirmButtonColor: '#06b6d4',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        heightAuto: false
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo guardar la configuración en este momento.',
-        confirmButtonColor: '#ef4444',
-        heightAuto: false
-      });
-    }
+    // 2. Mostramos la alerta de éxito de forma controlada y esperamos a que termine (2 segundos)
+    await Swal.fire({
+      icon: 'success',
+      title: '¡Guardado con éxito!',
+      text: 'La configuración ha sido actualizada correctamente.',
+      confirmButtonColor: '#06b6d4',
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      heightAuto: false
+    });
+
+    // 3. Guardamos la configuración. 
+    // Al guardarse en config.json, el servidor de desarrollo (ng serve) recargará la página automáticamente.
+    // Al hacerlo de último, nos aseguramos que la alerta se haya mostrado por completo.
+    await this.configService.saveConfig(this.tempConfig);
   }
 }

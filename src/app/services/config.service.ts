@@ -4,19 +4,34 @@ import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, firstValueFrom, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-interface AppConfig {
+export interface AppConfig {
   wsIp: string;
+  usaCalificacionServicio?: number;
+  usaImpresora?: boolean;
+  usaPuertosCom?: boolean;
+  usaTipoImpresion?: boolean;
+  usaPantallas?: boolean;
+  usaConsentimientoInformado?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-  private configSubject = new BehaviorSubject<AppConfig>({ wsIp: 'localhost' });
+  private configSubject = new BehaviorSubject<AppConfig>({ 
+    wsIp: 'localhost',
+    usaCalificacionServicio: 0,
+    usaImpresora: false,
+    usaPuertosCom: false,
+    usaTipoImpresion: false,
+    usaPantallas: false,
+    usaConsentimientoInformado: 0
+  });
   config$ = this.configSubject.asObservable();
 
   private readonly CONFIG_URL = 'config.json';
   private readonly LOCAL_STORAGE_KEY = 'skl_ws_ip';
+  private readonly LOCAL_STORAGE_EXTRAS_KEY = 'skl_extra_config';
 
   constructor(
     private http: HttpClient,
@@ -26,11 +41,26 @@ export class ConfigService {
   }
 
   private async loadConfig() {
+    let currentConfig = this.configSubject.value;
+
     if (isPlatformBrowser(this.platformId)) {
       // Try to load from localStorage first (user override)
       const savedIp = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-      if (savedIp) {
-        this.configSubject.next({ wsIp: savedIp });
+      const extraConfigStr = localStorage.getItem(this.LOCAL_STORAGE_EXTRAS_KEY);
+      
+      let extraConfig = {};
+      if (extraConfigStr) {
+        try {
+          extraConfig = JSON.parse(extraConfigStr);
+        } catch(e) {}
+      }
+
+      if (savedIp || extraConfigStr) {
+        this.configSubject.next({ 
+          ...currentConfig, 
+          wsIp: savedIp || currentConfig.wsIp, 
+          ...extraConfig 
+        });
         return;
       }
     }
@@ -39,26 +69,40 @@ export class ConfigService {
     try {
       const config = await firstValueFrom(
         this.http.get<AppConfig>(this.CONFIG_URL).pipe(
-          catchError(() => of({ wsIp: '127.0.0.1' }))
+          catchError(() => of(currentConfig))
         )
       );
-      this.configSubject.next(config);
+      this.configSubject.next({ ...currentConfig, ...config });
     } catch (error) {
       console.error('Error loading config:', error);
     }
   }
 
-  async saveConfig(ip: string): Promise<boolean> {
+  async saveConfig(config: AppConfig): Promise<boolean> {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.LOCAL_STORAGE_KEY, ip);
+      localStorage.setItem(this.LOCAL_STORAGE_KEY, config.wsIp);
+      localStorage.setItem(this.LOCAL_STORAGE_EXTRAS_KEY, JSON.stringify({
+        usaCalificacionServicio: config.usaCalificacionServicio,
+        usaImpresora: config.usaImpresora,
+        usaPuertosCom: config.usaPuertosCom,
+        usaTipoImpresion: config.usaTipoImpresion,
+        usaPantallas: config.usaPantallas,
+        usaConsentimientoInformado: config.usaConsentimientoInformado
+      }));
     }
 
-    this.configSubject.next({ wsIp: ip });
+    this.configSubject.next(config);
 
     // Try to save to server via API
     try {
+      const configToSave = {
+        wsIp: config.wsIp,
+        usaCalificacionServicio: config.usaCalificacionServicio,
+        usaConsentimientoInformado: config.usaConsentimientoInformado
+      };
+
       await firstValueFrom(
-        this.http.post('/api/config', { wsIp: ip }).pipe(
+        this.http.post('/api/config', configToSave).pipe(
           tap(() => console.log('Config saved to server')),
           catchError(err => {
             console.warn('Could not save config to server (this is expected in dev)', err);
@@ -70,6 +114,10 @@ export class ConfigService {
     } catch (error) {
       return false;
     }
+  }
+
+  getConfig(): AppConfig {
+    return this.configSubject.value;
   }
 
   getIp(): string {
