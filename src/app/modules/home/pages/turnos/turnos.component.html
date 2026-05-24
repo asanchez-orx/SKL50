@@ -66,10 +66,12 @@
 
       <!-- PAUSE STATE -->
       <div class="paused-state" *ngIf="isPaused">
-        <div class="paused-content">
-          <img src="assets/images/attention_paused_illustration.png" alt="Atención en Pausa" class="paused-img">
-          <h2>Atención en Pausa</h2>
-          <p>La recepción de turnos está detenida. Haz clic en "Iniciar Atención" para continuar.</p>
+        <div class="paused-badge">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+          <span class="paused-title">Atención en Espera</span>
+          <span class="paused-sub">La atención está pausada momentáneamente</span>
         </div>
       </div>
     </div>

@@ -3,11 +3,12 @@
     <div class="avatar-section">
       <div class="avatar-circle">
         <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          <path
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
       </div>
     </div>
-    
+
     <div class="info-grid">
       <div class="info-col">
         <div class="info-item"><label>Nombre Paciente:</label> <span>{{ patientData.nombre }}</span></div>
@@ -27,30 +28,25 @@
         <div class="info-item"><label>Fecha orden:</label> <span>{{ patientData.fechaOrden }}</span></div>
         <div class="info-item"><label>Tipo orden:</label> <span>{{ patientData.tipoOrden }}</span></div>
       </div>
-      <div class="info-col last-col">
-        <div class="order-number-box">
-          <div class="order-label">No. Orden</div>
-          <div class="order-value">{{ patientData.noOrden }}</div>
-          <div class="order-badge">{{ patientData.ordenCodigo }}</div>
-        </div>
-        <div class="service-box">
-          <div class="service-label">Servicio</div>
-          <div class="service-value">{{ patientData.servicio }}</div>
-        </div>
+      <div class="info-col">
+        <div class="info-item"><label>Número de turno:</label> <span style="color: #fbbf24;">{{ patientData.ordenCodigo
+            }}</span></div>
+        <div class="info-item"><label>No. orden:</label> <span>{{ patientData.noOrden }}</span></div>
+        <div class="info-item"><label>Servicio:</label> <span>{{ patientData.servicio }}</span></div>
       </div>
     </div>
   </div>
 
   <div class="toma-section">
     <div class="section-title">Toma</div>
-    
+
     <div class="tests-list">
       <div class="test-card" *ngFor="let test of tests">
         <div class="test-check">
           <input type="checkbox" [checked]="test.checked">
         </div>
         <div class="test-icon">
-           <img src="assets/images/tube_icon.png" alt="Tube" class="tube-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1042/1042310.png'">
+          <img src="/assets/images/tubos.png" alt="Tube" class="tube-img">
         </div>
         <div class="test-details">
           <div class="test-name">{{ test.nombre }}</div>
@@ -68,16 +64,12 @@
     <div class="print-actions">
       <button type="button" class="btn-print">
         <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
-          <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+          <path
+            d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
         </svg>
-        <span>Imprimir</span>
+        <span>Tomar</span>
       </button>
     </div>
   </div>
 
-  <button type="button" class="btn-floating-back" (click)="backToTurnos()" title="Volver a Turnos">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-    </svg>
-  </button>
 </div>

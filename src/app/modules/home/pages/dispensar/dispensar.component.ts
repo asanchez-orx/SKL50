@@ -32,10 +32,16 @@ export class DispensarComponent {
 
   tests = [
     { nombre: 'SUERO AYUNAS', subtitulo: 'TAPA AMARILLA', id: '202605031000-1', checked: true, cantidad: 1 },
+    { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 },
+    { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 },
+    { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 },
+    { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 },
     { nombre: 'SANGRE TOTAL CON EDTA', subtitulo: 'TAPA LILA', id: '202605031000-11', checked: true, cantidad: 1 }
+
+
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   backToTurnos() {
     this.router.navigate(['/home/turnos']);
