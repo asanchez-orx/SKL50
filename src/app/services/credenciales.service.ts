@@ -20,10 +20,9 @@ export class CredencialesService {
    * @returns An observable with the full HTTP response.
    */
   consumirCredenciales(usuario: string, password: string, idSede: number) {
-    const ip = this.configService.getIp();
-    const baseUrl = ip.endsWith('/') ? ip : `${ip}/`;
-    const url = `${baseUrl}ws_ConsumirCredenciales`;
+    const baseUrl = this.configService.getIp();
+    const url = `${baseUrl}/api/v1/besigabi/skl/consumirCredenciales`;
 
-    return this.http.post(url, { usuario, password, idSede }, { observe: 'response' });
+    return this.http.post(url, { usuario, contrasena: password }, { observe: 'response' });
   }
 }

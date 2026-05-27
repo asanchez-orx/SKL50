@@ -1,5 +1,6 @@
 {
-  "wsIp": "http://108.181.155.76/",
+  "wsIp": "http://localhost/",
+  "wsPort": "5016",
   "usaCalificacionServicio": 1,
   "usaConsentimientoInformado": 1
 }

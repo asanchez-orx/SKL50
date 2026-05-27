@@ -6,6 +6,7 @@ import { catchError, tap } from 'rxjs/operators';
 
 export interface AppConfig {
   wsIp: string;
+  wsPort?: string;
   usaCalificacionServicio?: number;
   usaImpresora?: boolean;
   usaPuertosCom?: boolean;
@@ -20,6 +21,7 @@ export interface AppConfig {
 export class ConfigService {
   private configSubject = new BehaviorSubject<AppConfig>({ 
     wsIp: 'localhost',
+    wsPort: '',
     usaCalificacionServicio: 0,
     usaImpresora: false,
     usaPuertosCom: false,
@@ -31,6 +33,7 @@ export class ConfigService {
 
   private readonly CONFIG_URL = 'config.json';
   private readonly LOCAL_STORAGE_KEY = 'skl_ws_ip';
+  private readonly LOCAL_STORAGE_PORT_KEY = 'skl_ws_port';
   private readonly LOCAL_STORAGE_EXTRAS_KEY = 'skl_extra_config';
 
   constructor(
@@ -46,6 +49,7 @@ export class ConfigService {
     if (isPlatformBrowser(this.platformId)) {
       // Try to load from localStorage first (user override)
       const savedIp = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+      const savedPort = localStorage.getItem(this.LOCAL_STORAGE_PORT_KEY);
       const extraConfigStr = localStorage.getItem(this.LOCAL_STORAGE_EXTRAS_KEY);
       
       let extraConfig = {};
@@ -55,10 +59,11 @@ export class ConfigService {
         } catch(e) {}
       }
 
-      if (savedIp || extraConfigStr) {
+      if (savedIp || savedPort || extraConfigStr) {
         this.configSubject.next({ 
           ...currentConfig, 
-          wsIp: savedIp || currentConfig.wsIp, 
+          wsIp: savedIp || currentConfig.wsIp,
+          wsPort: savedPort ?? currentConfig.wsPort,
           ...extraConfig 
         });
         return;
@@ -81,6 +86,7 @@ export class ConfigService {
   async saveConfig(config: AppConfig): Promise<boolean> {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.LOCAL_STORAGE_KEY, config.wsIp);
+      localStorage.setItem(this.LOCAL_STORAGE_PORT_KEY, config.wsPort ?? '');
       localStorage.setItem(this.LOCAL_STORAGE_EXTRAS_KEY, JSON.stringify({
         usaCalificacionServicio: config.usaCalificacionServicio,
         usaImpresora: config.usaImpresora,
@@ -97,6 +103,7 @@ export class ConfigService {
     try {
       const configToSave = {
         wsIp: config.wsIp,
+        wsPort: config.wsPort,
         usaCalificacionServicio: config.usaCalificacionServicio,
         usaConsentimientoInformado: config.usaConsentimientoInformado
       };
@@ -121,6 +128,13 @@ export class ConfigService {
   }
 
   getIp(): string {
-    return this.configSubject.value.wsIp;
+    const { wsIp, wsPort } = this.configSubject.value;
+    const ip = wsIp || 'localhost';
+    const cleanIp = ip.endsWith('/') ? ip.slice(0, -1) : ip;
+    const port = wsPort && wsPort.trim() ? `:${wsPort.trim()}` : '';
+    // If IP already has protocol prefix, keep it; otherwise don't add one
+    const hasProtocol = /^https?:\/\//i.test(cleanIp);
+    const base = hasProtocol ? cleanIp : cleanIp;
+    return `${base}${port}`;
   }
 }

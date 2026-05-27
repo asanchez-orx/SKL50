@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TurnosService } from '../../services/turnos.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-home',
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   openSelectionModal() {
     this.showSelectionModal = true;
     this.fetchServicios();
+    this.fetchTaquillas();
   }
 
   closeSelectionModal() {
@@ -50,7 +52,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
-    private turnosService: TurnosService
+    private turnosService: TurnosService,
+    private router: Router
   ) { }
 
 
@@ -73,6 +76,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       } else {
         this.showSelectionModal = true;
         this.fetchServicios();
+        this.fetchTaquillas();
       }
 
       // Escuchar el trigger para iniciar el cronómetro
@@ -98,11 +102,31 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.turnosService.getServicios(idSede).subscribe({
       next: (data: any) => {
-        this.servicios = data;
+        this.servicios = data || [];
         this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error fetching servicios:', err);
+      }
+    });
+  }
+
+  fetchTaquillas() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    const idSede = localStorage.getItem('currentSedeId');
+    if (!idSede) {
+      console.warn('No se encontró currentSedeId para cargar taquillas');
+      return;
+    }
+
+    this.turnosService.getTaquillas(idSede).subscribe({
+      next: (data: any) => {
+        this.taquillas = data || [];
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching taquillas:', err);
       }
     });
   }
@@ -118,15 +142,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.selectionData.modulo = '';
     this.taquillas = [];
 
-    this.turnosService.getTaquillas(idSede).subscribe({
-      next: (data: any) => {
-        this.taquillas = data;
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error('Error fetching taquillas:', err);
-      }
-    });
+    this.fetchTaquillas();
   }
 
   private startTimer() {
@@ -186,7 +202,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  logout() {
+  async logout() {
+    const nombre = this.username || 'Usuario';
+
+    await Swal.fire({
+      icon: 'success',
+      title: `¡Hasta pronto, ${nombre}! 👋`,
+      text: 'Tu sesión ha sido cerrada correctamente. ¡Que tengas un excelente día!',
+      confirmButtonColor: '#06b6d4',
+      confirmButtonText: 'Salir',
+      timer: 3000,
+      timerProgressBar: true,
+      heightAuto: false,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       localStorage.clear();
       if (this.timerInterval) {
@@ -196,6 +231,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.sessionTime = '00:00:00';
       this.secondsElapsed = 0;
     }
+
+    // Pequeña pausa para que la animación de cierre del modal termine antes de navegar
+    await new Promise(resolve => setTimeout(resolve, 400));
+    this.router.navigate(['/login']);
   }
   // Menú dinámico para el sidebar
   menuItems = [

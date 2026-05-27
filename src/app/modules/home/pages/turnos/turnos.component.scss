@@ -273,6 +273,27 @@
           tr:hover td {
             background-color: #f0f9ff;
           }
+
+          // Tonalidad según estado de tiempo
+          tr.row-success td {
+            background-color: rgba(56, 142, 60, 0.04);
+          }
+          tr.row-success:nth-child(even) td {
+            background-color: rgba(56, 142, 60, 0.09);
+          }
+          tr.row-success:hover td {
+            background-color: rgba(56, 142, 60, 0.15);
+          }
+
+          tr.row-danger td {
+            background-color: rgba(230, 46, 27, 0.04);
+          }
+          tr.row-danger:nth-child(even) td {
+            background-color: rgba(230, 46, 27, 0.09);
+          }
+          tr.row-danger:hover td {
+            background-color: rgba(230, 46, 27, 0.15);
+          }
         }
       }
     }

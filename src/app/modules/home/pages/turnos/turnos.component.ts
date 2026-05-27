@@ -69,12 +69,13 @@ export class TurnosComponent implements OnInit {
       next: (data: any) => {
         if (data && Array.isArray(data)) {
           this.waitingTurns = data.map((t: any) => ({
-            numero: t.numeroTurno,
+            numero: `${t.codTipoTurno} - ${t.numeroTurno}`,
             tipo: t.nomTipoTurno,
             paciente: `${t.paciente?.nombre1 || ''} ${t.paciente?.apellido1 || ''}`.trim() || 'Desconocido',
             prioridad: 'P' + (t.nPrioridad || 3),
             orden: t.numeroOrden,
-            espera: `${t.MinutosEspera} MIN`
+            espera: `${t.minutosEspera} MIN`,
+            tiempo: t.tiempo
           }));
         }
       },

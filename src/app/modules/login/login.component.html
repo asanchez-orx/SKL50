@@ -44,7 +44,7 @@
             <select id="sede" name="sede" [(ngModel)]="loginData.sede" required
               [disabled]="!loginData.username || !loginData.password">
               <option value="" disabled selected>Selecciona tu sede</option>
-              <option *ngFor="let sede of sedes" [value]="sede.Id">{{ sede.Nombre }}</option>
+              <option *ngFor="let sede of sedes" [value]="sede.idSede">{{ sede.nomSede }}</option>
             </select>
           </div>
         </div>
@@ -68,9 +68,16 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="wsIp">IP Servidor WebServices</label>
-          <div class="input-wrapper">
-            <input type="text" id="wsIp" [(ngModel)]="tempConfig.wsIp" placeholder="Ej: 192.168.1.10">
+          <label>Servidor WebServices</label>
+          <div class="input-row">
+            <div class="input-wrapper input-ip">
+              <input type="text" id="wsIp" [(ngModel)]="tempConfig.wsIp" placeholder="Ej: 192.168.1.10">
+              <span class="input-hint">IP / Host</span>
+            </div>
+            <div class="input-wrapper input-port">
+              <input type="text" id="wsPort" [(ngModel)]="tempConfig.wsPort" placeholder="Ej: 5016" maxlength="5">
+              <span class="input-hint">Puerto</span>
+            </div>
           </div>
         </div>
 

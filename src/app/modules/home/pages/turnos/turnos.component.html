@@ -42,7 +42,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let turn of waitingTurns">
+            <tr *ngFor="let turn of waitingTurns" [ngClass]="turn.tiempo === 2 ? 'row-success' : 'row-danger'">
               <td><span class="turn-id">{{ turn.numero }}</span></td>
               <td>{{ turn.tipo }}</td>
               <td class="text-left">{{ turn.paciente }}</td>
@@ -50,7 +50,9 @@
               <td>{{ turn.orden }}</td>
               <td>{{ turn.espera }}</td>
               <td>
-                <button type="button" class="btn-action" (click)="callTurn(turn)">
+                <button type="button" class="btn-action" (click)="callTurn(turn)"
+                  [style.backgroundColor]="turn.tiempo === 2 ? '#388E3C' : '#e62e1b'"
+                  style="color: white; border-color: transparent;">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"
                     style="margin-right: 6px; display: inline-block; vertical-align: middle;">
                     <path
